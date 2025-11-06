@@ -1,0 +1,12 @@
+# CycleOPS Worker Agent Dependencies
+
+# Core benchmarking
+onnxruntime>=1.16.0
+psutil>=5.9.0
+numpy>=1.24.0
+pandas>=2.0.0
+coremltools>=6.0.0  # CoreML support (macOS/iOS)
+
+# Communication with orchestrator
+requests>=2.31.0
+
