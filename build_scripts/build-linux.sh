@@ -90,13 +90,13 @@ Quick Start:
    ./dumont validate
 
 3. Test connectivity:
-   ./dumont test --orchestrator-url http://192.168.1.100:5000
+   ./dumont test --host http://192.168.1.100:5000
 
 4. Enroll worker:
-   ./dumont enroll --orchestrator-url http://192.168.1.100:5000
+   ./dumont enroll --host http://192.168.1.100:5000
 
 5. Start worker:
-   ./dumont start --orchestrator-url http://192.168.1.100:5000
+   ./dumont start --host http://192.168.1.100:5000
 
 For help:
    ./dumont --help
@@ -153,5 +153,5 @@ echo "  Just copy 'dumont' to target machines - no Python needed!"
 echo ""
 echo "To deploy to remote machine:"
 echo "  scp dist_binary/dumont user@remote:~/"
-echo "  ssh user@remote './dumont start --orchestrator-url http://IP:5000'"
+echo "  ssh user@remote './dumont start --host http://IP:5000'"
 echo ""

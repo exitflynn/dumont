@@ -7,7 +7,7 @@
 #   ./start_worker.sh [options]
 #   
 # Options:
-#   --orchestrator-url URL     Orchestrator URL (default: http://localhost:5000)
+#   --host URL     Orchestrator URL (default: http://localhost:5000)
 #   --redis-host HOST          Redis host (default: localhost)
 #   --redis-port PORT          Redis port (default: 6379)
 #   --debug                    Enable debug logging
@@ -68,7 +68,7 @@ show_help() {
     echo "Usage: $0 [options]"
     echo ""
     echo "Options:"
-    echo "  --orchestrator-url URL     Orchestrator URL (default: http://localhost:5000)"
+    echo "  --host URL     Orchestrator URL (default: http://localhost:5000)"
     echo "  --redis-host HOST          Redis host (default: localhost)"
     echo "  --redis-port PORT          Redis port (default: 6379)"
     echo "  --debug                    Enable debug logging"
@@ -77,14 +77,14 @@ show_help() {
     echo ""
     echo "Examples:"
     echo "  ./start_worker.sh"
-    echo "  ./start_worker.sh --orchestrator-url http://192.168.1.100:5000"
+    echo "  ./start_worker.sh --host http://192.168.1.100:5000"
     echo "  ./start_worker.sh --debug --redis-host 192.168.1.100"
 }
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --orchestrator-url)
+        --host)
             ORCHESTRATOR_URL="$2"
             shift 2
             ;;
@@ -268,7 +268,7 @@ echo ""
 cd "$SCRIPT_DIR"
 
 python3 worker/worker_agent.py \
-    --orchestrator-url "$ORCHESTRATOR_URL" \
+    --host "$ORCHESTRATOR_URL" \
     --redis-host "$REDIS_HOST" \
     --redis-port "$REDIS_PORT" \
     $DEBUG_FLAG

@@ -26,7 +26,7 @@ def cmd_start(args):
     setup_logging(args.verbose)
     
     if not args.orchestrator_url:
-        print("Error: --orchestrator-url is required")
+        print("Error: --host is required")
         sys.exit(1)
     
     redis_host = args.redis_host
@@ -65,7 +65,7 @@ def cmd_enroll(args):
     setup_logging(args.verbose)
     
     if not args.orchestrator_url:
-        print("Error: --orchestrator-url is required")
+        print("Error: --host is required")
         sys.exit(1)
     
     redis_host = args.redis_host
@@ -248,13 +248,13 @@ def main():
     subparsers = parser.add_subparsers(dest='command', help='Command to run')
     
     parser_start = subparsers.add_parser('start', help='Start worker agent')
-    parser_start.add_argument('--orchestrator-url', required=True, help='Orchestrator URL')
+    parser_start.add_argument('--host', required=True, help='Orchestrator URL')
     parser_start.add_argument('--redis-host', default='localhost', help='Redis host')
     parser_start.add_argument('--redis-port', type=int, default=6379, help='Redis port')
     parser_start.set_defaults(func=cmd_start)
     
     parser_enroll = subparsers.add_parser('enroll', help='Enroll worker')
-    parser_enroll.add_argument('--orchestrator-url', required=True, help='Orchestrator URL')
+    parser_enroll.add_argument('--host', required=True, help='Orchestrator URL')
     parser_enroll.add_argument('--redis-host', default='localhost', help='Redis host')
     parser_enroll.add_argument('--redis-port', type=int, default=6379, help='Redis port')
     parser_enroll.set_defaults(func=cmd_enroll)
@@ -267,7 +267,7 @@ def main():
     parser_validate.set_defaults(func=cmd_validate)
     
     parser_test = subparsers.add_parser('test', help='Test connectivity')
-    parser_test.add_argument('--orchestrator-url', required=True, help='Orchestrator URL')
+    parser_test.add_argument('--host', required=True, help='Orchestrator URL')
     parser_test.add_argument('--redis-host', default='localhost', help='Redis host')
     parser_test.add_argument('--redis-port', type=int, default=6379, help='Redis port')
     parser_test.set_defaults(func=cmd_test)

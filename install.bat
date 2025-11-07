@@ -93,8 +93,8 @@ echo call .venv_worker\Scripts\activate.bat
 echo echo ✓ Dumont environment activated
 echo echo.
 echo echo Available commands:
-echo echo   cyclops-worker start --orchestrator-url ^<url^>
-echo echo   cyclops-worker enroll --orchestrator-url ^<url^>
+echo echo   cyclops-worker start --host ^<url^>
+echo echo   cyclops-worker enroll --host ^<url^>
 echo echo   cyclops-worker info
 echo echo   cyclops-worker validate
 echo echo.
@@ -117,10 +117,10 @@ echo   2. Check system info:
 echo      cyclops-worker info
 echo.
 echo   3. Enroll with orchestrator:
-echo      cyclops-worker enroll --orchestrator-url http://^<ip^>:5000
+echo      cyclops-worker enroll --host http://^<ip^>:5000
 echo.
 echo   4. Start the worker:
-echo      cyclops-worker start --orchestrator-url http://^<ip^>:5000
+echo      cyclops-worker start --host http://^<ip^>:5000
 echo.
 echo For help:
 echo   cyclops-worker --help

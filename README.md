@@ -11,14 +11,14 @@ Distributed ML inference worker for the CycleOPS orchestration system.
 pip install git+https://github.com/exitflynn/dumont.git
 
 # Or with platform-specific features
-pip install "dumont-worker[macos] @ git+https://github.com/exitflynn/dumont.git"  # macOS with CoreML
-pip install "dumont-worker[windows] @ git+https://github.com/exitflynn/dumont.git"  # Windows with DirectML
+pip install "dumont[macos] @ git+https://github.com/exitflynn/dumont.git"  # macOS with CoreML
+pip install "dumont[windows] @ git+https://github.com/exitflynn/dumont.git"  # Windows with DirectML
 ```
 
 Then run:
 ```bash
 dumont info
-dumont start --orchestrator-url http://<orchestrator-ip>:5000
+dumont start --host http://<orchestrator-ip>:5000
 ```
 
 ### Option 2: Standalone Binary (No Python Required)
@@ -48,13 +48,13 @@ dumont info
 dumont validate
 
 # Test connectivity
-dumont test --orchestrator-url http://192.168.1.100:5000
+dumont test --host http://192.168.1.100:5000
 
 # Enroll worker
-dumont enroll --orchestrator-url http://192.168.1.100:5000
+dumont enroll --host http://192.168.1.100:5000
 
 # Start worker
-dumont start --orchestrator-url http://192.168.1.100:5000 \
+dumont start --host http://192.168.1.100:5000 \
               --redis-host 192.168.1.100 \
               --redis-port 6379
 ```

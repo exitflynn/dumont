@@ -110,7 +110,7 @@ Quick Start (ONNX only):
    ./dumont info
 
 2. Start worker:
-   ./dumont start --orchestrator-url http://192.168.1.100:5000
+   ./dumont start --host http://192.168.1.100:5000
 
 System Requirements:
 -------------------
@@ -123,7 +123,7 @@ For CoreML Support:
 Use Python installation instead:
    ./install.sh
    source activate_worker.sh
-   dumont start --orchestrator-url http://IP:5000
+   dumont start --host http://IP:5000
 EOF
 
 echo "  ✓ Created distribution README"
@@ -155,10 +155,10 @@ echo "Binary:   dist_binary/dumont (${SIZE})"
 echo "Archive:  ${ARCHIVE_NAME}"
 echo ""
 echo "For ONNX benchmarking:"
-echo "  ./dist_binary/dumont start --orchestrator-url http://IP:5000"
+echo "  ./dist_binary/dumont start --host http://IP:5000"
 echo ""
 echo "For FULL CoreML support, use Python package instead:"
 echo "  ./install.sh"
 echo "  source activate_worker.sh"
-echo "  dumont start --orchestrator-url http://IP:5000"
+echo "  dumont start --host http://IP:5000"
 echo ""

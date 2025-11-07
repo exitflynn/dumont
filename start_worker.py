@@ -24,7 +24,7 @@ args = []
 
 orchestrator_url = os.environ.get('ORCHESTRATOR_URL')
 if orchestrator_url:
-    args.extend(['--orchestrator-url', orchestrator_url])
+    args.extend(['--host', orchestrator_url])
 
 # Default to Docker Redis port 6380
 redis_port = os.environ.get('REDIS_PORT', '6380')

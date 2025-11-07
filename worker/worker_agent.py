@@ -358,7 +358,7 @@ class WorkerAgent:
 
 def main():
     parser = argparse.ArgumentParser(description='ML Model Benchmarking Worker Agent')
-    parser.add_argument('--orchestrator-url', type=str, default='http://localhost:5000')
+    parser.add_argument('--host', type=str, default='http://localhost:5000')
     parser.add_argument('--redis-host', type=str, default='localhost')
     parser.add_argument('--redis-port', type=int, default=6379)
     parser.add_argument('--debug', action='store_true')

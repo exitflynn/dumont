@@ -88,13 +88,13 @@ echo 2. Validate requirements:
 echo    cyclops-worker.exe validate
 echo.
 echo 3. Test connectivity:
-echo    cyclops-worker.exe test --orchestrator-url http://192.168.1.100:5000
+echo    cyclops-worker.exe test --host http://192.168.1.100:5000
 echo.
 echo 4. Enroll worker:
-echo    cyclops-worker.exe enroll --orchestrator-url http://192.168.1.100:5000
+echo    cyclops-worker.exe enroll --host http://192.168.1.100:5000
 echo.
 echo 5. Start worker:
-echo    cyclops-worker.exe start --orchestrator-url http://192.168.1.100:5000
+echo    cyclops-worker.exe start --host http://192.168.1.100:5000
 echo.
 echo For help:
 echo    cyclops-worker.exe --help
@@ -147,7 +147,7 @@ echo   Just copy 'cyclops-worker.exe' to target machines - no Python needed!
 echo.
 echo To run on remote machine:
 echo   Copy cyclops-worker.exe and run:
-echo   cyclops-worker.exe start --orchestrator-url http://IP:5000
+echo   cyclops-worker.exe start --host http://IP:5000
 echo.
 
 pause

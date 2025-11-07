@@ -6,7 +6,7 @@ REM Usage:
 REM   start_worker.bat [options]
 REM   
 REM Options:
-REM   --orchestrator-url URL     Orchestrator URL (default: http://localhost:5000)
+REM   --host URL     Orchestrator URL (default: http://localhost:5000)
 REM   --redis-host HOST          Redis host (default: localhost)
 REM   --redis-port PORT          Redis port (default: 6379)
 REM   --debug                    Enable debug logging
@@ -26,7 +26,7 @@ set DEBUG_FLAG=
 REM Parse arguments
 :parse_args
 if "%1"=="" goto args_done
-if "%1"=="--orchestrator-url" (
+if "%1"=="--host" (
     set ORCHESTRATOR_URL=%2
     shift
     shift
@@ -219,7 +219,7 @@ echo.
 
 REM Start the worker
 python worker/worker_agent.py ^
-    --orchestrator-url %ORCHESTRATOR_URL% ^
+    --host %ORCHESTRATOR_URL% ^
     --redis-host %REDIS_HOST% ^
     --redis-port %REDIS_PORT% ^
     %DEBUG_FLAG%
@@ -234,7 +234,7 @@ echo.
 echo Usage: %0 [options]
 echo.
 echo Options:
-echo   --orchestrator-url URL     Orchestrator URL (default: http://localhost:5000)
+echo   --host URL     Orchestrator URL (default: http://localhost:5000)
 echo   --redis-host HOST          Redis host (default: localhost)
 echo   --redis-port PORT          Redis port (default: 6379)
 echo   --debug                    Enable debug logging
@@ -243,7 +243,7 @@ echo   --help                     Show this help message
 echo.
 echo Examples:
 echo   start_worker.bat
-echo   start_worker.bat --orchestrator-url http://192.168.1.100:5000
+echo   start_worker.bat --host http://192.168.1.100:5000
 echo   start_worker.bat --debug --redis-host 192.168.1.100
 echo.
 exit /b 0
