@@ -181,7 +181,7 @@ def check_device_info() -> Dict[str, Any]:
     """Check device information detection."""
     try:
         sys.path.insert(0, str(Path.cwd()))
-        from worker.legacy.device_info import get_device_info, get_compute_units
+        from worker.device_info import get_device_info, get_compute_units
         
         device_info = get_device_info()
         compute_units = get_compute_units()

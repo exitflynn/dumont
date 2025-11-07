@@ -1,0 +1,12 @@
+include *.md
+include *.txt
+include *.sh
+include *.bat
+include setup.py
+include requirements*.txt
+recursive-include worker *.py
+recursive-include core *.py
+recursive-exclude * __pycache__
+recursive-exclude * *.pyc
+recursive-exclude * *.pyo
+recursive-exclude * .DS_Store

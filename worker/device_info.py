@@ -155,7 +155,7 @@ def get_device_info() -> Dict[str, Optional[str]]:
         'DeviceName': device_name,
         'DeviceYear': device_year,
         'Soc': cpu_info,
-        'Ram': int(ram_gb),
+        'Ram': str(int((ram_gb))),
         'DiscreteGpu': discrete_gpu,
         'VRam': vram,
         'DeviceOs': system,

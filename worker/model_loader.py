@@ -107,10 +107,8 @@ class ModelLoader:
                 self.session = self.coreml_model
                 
                 # Verify CoreML.framework is available by attempting a test prediction
-                # This checks if native bindings are present
                 try:
                     test_input = np.random.rand(1, 3, 224, 224).astype(np.float32)
-                    # Try to get input name
                     spec = None
                     if hasattr(self.coreml_model, 'get_spec'):
                         spec = self.coreml_model.get_spec()
@@ -121,19 +119,12 @@ class ModelLoader:
                     if spec and hasattr(spec, 'description') and len(spec.description.input) > 0:
                         test_input_name = spec.description.input[0].name
                     
-                    # Attempt prediction - this will fail if CoreML.framework is unavailable
                     _ = self.coreml_model.predict({test_input_name: test_input})
                     print(f"CoreML model loaded successfully with ACTUAL inference support (framework=CoreML)")
                 except Exception as framework_error:
                     if "Unable to load CoreML.framework" in str(framework_error):
                         raise RuntimeError(
                             "CoreML.framework native bindings are not available. "
-                            "This usually means:\n"
-                            "  1. Python version is too new (try Python 3.11 or 3.12)\n"
-                            "  2. coremltools was installed without native bindings\n"
-                            "  3. Missing system dependencies\n"
-                            "ACTUAL CoreML inference is REQUIRED for benchmarking. "
-                            "Simulated data is not acceptable."
                         )
                     else:
                         # Other error during test prediction - may be input shape mismatch, that's OK

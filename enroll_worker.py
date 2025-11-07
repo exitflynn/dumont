@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-"""
-CycleOPS Worker Enrollment Script
-
-Automated setup and registration of a worker node with the orchestrator.
-Handles platform-specific configuration and dependency installation.
-
-Usage:
-    python3 enroll_worker.py --orchestrator-url http://192.168.1.100:5000
-"""
 
 import sys
 import os
@@ -23,7 +14,6 @@ import uuid
 
 
 class Colors:
-    """ANSI color codes for terminal output."""
     GREEN = '\033[92m'
     RED = '\033[91m'
     YELLOW = '\033[93m'
@@ -34,19 +24,8 @@ class Colors:
 
 
 class WorkerEnroller:
-    """Handles worker enrollment process."""
-    
     def __init__(self, orchestrator_url: str, redis_host: str, redis_port: int, 
                  config_file: str = 'worker_config.json'):
-        """
-        Initialize worker enroller.
-        
-        Args:
-            orchestrator_url: Orchestrator URL
-            redis_host: Redis host
-            redis_port: Redis port
-            config_file: Configuration file name
-        """
         self.orchestrator_url = orchestrator_url
         self.redis_host = redis_host
         self.redis_port = redis_port
@@ -56,40 +35,32 @@ class WorkerEnroller:
         self.capabilities = []
     
     def print_header(self, text: str):
-        """Print formatted header."""
         print(f"\n{Colors.BOLD}{Colors.BLUE}{'='*70}{Colors.RESET}")
         print(f"{Colors.BOLD}{Colors.BLUE}{text:^70}{Colors.RESET}")
         print(f"{Colors.BOLD}{Colors.BLUE}{'='*70}{Colors.RESET}\n")
     
     def print_section(self, text: str):
-        """Print formatted section."""
         print(f"\n{Colors.BOLD}{Colors.CYAN}{text}{Colors.RESET}")
         print(f"{'-'*70}")
     
     def print_check(self, name: str, passed: bool, message: str = ""):
-        """Print check result."""
-        status = f"{Colors.GREEN}✅{Colors.RESET}" if passed else f"{Colors.RED}❌{Colors.RESET}"
+        status = f"{Colors.GREEN}✓{Colors.RESET}" if passed else f"{Colors.RED}✗{Colors.RESET}"
         detail = f" {message}" if message else ""
         print(f"  {status} {name}{detail}")
     
     def print_info(self, text: str):
-        """Print informational message."""
-        print(f"  {Colors.BLUE}ℹ️ {text}{Colors.RESET}")
+        print(f"  {Colors.BLUE}i {text}{Colors.RESET}")
     
     def print_warning(self, text: str):
-        """Print warning message."""
-        print(f"  {Colors.YELLOW}⚠️  {text}{Colors.RESET}")
+        print(f"  {Colors.YELLOW}! {text}{Colors.RESET}")
     
     def print_success(self, text: str):
-        """Print success message."""
-        print(f"  {Colors.GREEN}✅ {text}{Colors.RESET}")
+        print(f"  {Colors.GREEN}✓ {text}{Colors.RESET}")
     
     def print_error(self, text: str):
-        """Print error message."""
-        print(f"  {Colors.RED}❌ {text}{Colors.RESET}")
+        print(f"  {Colors.RED}✗ {text}{Colors.RESET}")
     
     def _get_platform_info(self) -> Dict[str, str]:
-        """Get platform information."""
         system = platform.system()
         return {
             'system': system,
@@ -97,22 +68,12 @@ class WorkerEnroller:
             'version': platform.version(),
             'machine': platform.machine(),
             'processor': platform.processor(),
-            'is_macos': system == "Darwin",
-            'is_windows': system == "Windows",
-            'is_linux': system == "Linux",
+            'is_macos': str(system == "Darwin"),
+            'is_windows': str(system == "Windows"),
+            'is_linux': str(system == "Linux"),
         }
     
     def run_command(self, cmd: str, shell: bool = True) -> Tuple[bool, str]:
-        """
-        Run a command.
-        
-        Args:
-            cmd: Command to run
-            shell: If True, run as shell command
-            
-        Returns:
-            (success: bool, output: str)
-        """
         try:
             result = subprocess.run(
                 cmd,
@@ -127,9 +88,8 @@ class WorkerEnroller:
         except Exception as e:
             return False, str(e)
     
-    def step_1_validate_environment(self) -> bool:
-        """Step 1: Validate Python environment."""
-        self.print_section("Step 1: Validating Python Environment")
+    def validate_environment(self) -> bool:
+        self.print_section("Validating Python Environment")
         
         version_info = sys.version_info
         if version_info < (3, 8):
@@ -151,9 +111,8 @@ class WorkerEnroller:
         
         return True
     
-    def step_2_detect_platform(self) -> bool:
-        """Step 2: Detect platform and capabilities."""
-        self.print_section("Step 2: Detecting Platform & Capabilities")
+    def detect_platform(self) -> bool:
+        self.print_section("Detecting Platform & Capabilities")
         
         system = self.platform_info['system']
         self.print_check("Platform detected", True, f"{system} {self.platform_info['release']}")
@@ -161,13 +120,13 @@ class WorkerEnroller:
         # Get device info
         try:
             sys.path.insert(0, str(Path.cwd()))
-            from worker.legacy.device_info import get_device_info, get_compute_units
+            from worker.device_info import get_device_info, get_compute_units
             
             self.device_info = get_device_info()
             self.capabilities = get_compute_units()
             
-            self.print_check("Device name", True, self.device_info.get('DeviceName', 'N/A'))
-            self.print_check("CPU/SOC", True, self.device_info.get('Soc', 'N/A')[:50])
+            self.print_check("Device name", True, str(self.device_info.get('DeviceName', 'N/A')))
+            self.print_check("CPU/SOC", True, str(self.device_info.get('Soc', 'N/A'))[:50])
             self.print_check("RAM", True, f"{self.device_info.get('Ram', 0)} GB")
             
             # Platform-specific capabilities
@@ -185,9 +144,8 @@ class WorkerEnroller:
             self.print_error(f"Failed to detect device info: {e}")
             return False
     
-    def step_3_validate_dependencies(self) -> bool:
-        """Step 3: Validate Python dependencies."""
-        self.print_section("Step 3: Validating Python Dependencies")
+    def validate_dependencies(self) -> bool:
+        self.print_section("Validating Python Dependencies")
         
         # Check for pip
         success, _ = self.run_command("pip --version")
@@ -241,9 +199,8 @@ class WorkerEnroller:
         
         return True
     
-    def step_4_test_connectivity(self) -> bool:
-        """Step 4: Test network connectivity."""
-        self.print_section("Step 4: Testing Network Connectivity")
+    def test_connectivity(self) -> bool:
+        self.print_section("Testing Network Connectivity")
         
         # Get hostname and IP
         try:
@@ -293,9 +250,8 @@ class WorkerEnroller:
         
         return True
     
-    def step_5_register_worker(self) -> bool:
-        """Step 5: Register worker with orchestrator."""
-        self.print_section("Step 5: Registering Worker with Orchestrator")
+    def register_worker(self) -> bool:
+        self.print_section("Registering Worker with Orchestrator")
         
         try:
             import requests
@@ -349,9 +305,8 @@ class WorkerEnroller:
             self.print_error(f"Registration error: {e}")
             return False
     
-    def step_6_create_config(self) -> bool:
-        """Step 6: Create worker configuration file."""
-        self.print_section("Step 6: Creating Worker Configuration")
+    def create_config(self) -> bool:
+        self.print_section("Creating Worker Configuration")
         
         try:
             config = {
@@ -393,9 +348,8 @@ class WorkerEnroller:
             self.print_error(f"Configuration creation error: {e}")
             return False
     
-    def step_7_verify_registration(self) -> bool:
-        """Step 7: Verify worker registration."""
-        self.print_section("Step 7: Verifying Worker Registration")
+    def verify_registration(self) -> bool:
+        self.print_section("Verifying Worker Registration")
         
         try:
             import requests
@@ -442,13 +396,13 @@ class WorkerEnroller:
         print(f"{Colors.CYAN}This script will register this device as a worker with the CycleOPS orchestrator.{Colors.RESET}\n")
         
         steps = [
-            ("Environment", self.step_1_validate_environment),
-            ("Platform Detection", self.step_2_detect_platform),
-            ("Dependency Check", self.step_3_validate_dependencies),
-            ("Connectivity Test", self.step_4_test_connectivity),
-            ("Worker Registration", self.step_5_register_worker),
-            ("Configuration", self.step_6_create_config),
-            ("Verification", self.step_7_verify_registration),
+            ("Environment", self.validate_environment),
+            ("Platform Detection", self.detect_platform),
+            ("Dependency Check", self.validate_dependencies),
+            ("Connectivity Test", self.test_connectivity),
+            ("Worker Registration", self.register_worker),
+            ("Configuration", self.create_config),
+            ("Verification", self.verify_registration),
         ]
         
         failed_steps = []
@@ -458,16 +412,15 @@ class WorkerEnroller:
                 success = step_func()
                 if not success:
                     failed_steps.append(step_name)
-                    self.print_warning(f"⚠️  {step_name} - Some checks failed")
+                    self.print_warning(f"{step_name} - Some checks failed")
             except Exception as e:
                 failed_steps.append(step_name)
-                self.print_error(f"❌ {step_name} - Unexpected error: {e}")
+                self.print_error(f"{step_name} - Unexpected error: {e}")
         
-        # Print summary
         self.print_section("ENROLLMENT SUMMARY")
         
         if not failed_steps:
-            print(f"{Colors.GREEN}{Colors.BOLD}✅ ENROLLMENT SUCCESSFUL!{Colors.RESET}\n")
+            print(f"{Colors.GREEN}{Colors.BOLD}ENROLLMENT SUCCESSFUL!{Colors.RESET}\n")
             print(f"Worker is ready to accept jobs.")
             print(f"\nTo start the worker agent, run:")
             print(f"  {Colors.CYAN}python3 worker/worker_agent.py \\")
@@ -476,14 +429,13 @@ class WorkerEnroller:
             print(f"    --redis-port {self.redis_port}{Colors.RESET}\n")
             return True
         else:
-            print(f"{Colors.YELLOW}{Colors.BOLD}⚠️  ENROLLMENT INCOMPLETE{Colors.RESET}\n")
+            print(f"{Colors.YELLOW}{Colors.BOLD}ENROLLMENT INCOMPLETE{Colors.RESET}\n")
             print(f"Failed steps: {', '.join(failed_steps)}\n")
             print(f"Review errors above and try again.\n")
             return False
 
 
 def main():
-    """Main entry point."""
     parser = argparse.ArgumentParser(
         description='CycleOPS Worker Enrollment',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -495,34 +447,13 @@ Examples:
         """
     )
     
-    parser.add_argument(
-        '--orchestrator-url',
-        required=True,
-        help='Orchestrator URL (required)'
-    )
-    
-    parser.add_argument(
-        '--redis-host',
-        default='localhost',
-        help='Redis host (default: localhost)'
-    )
-    
-    parser.add_argument(
-        '--redis-port',
-        type=int,
-        default=6379,
-        help='Redis port (default: 6379)'
-    )
-    
-    parser.add_argument(
-        '--config-file',
-        default='worker_config.json',
-        help='Configuration file name (default: worker_config.json)'
-    )
+    parser.add_argument('--orchestrator-url', required=True, help='Orchestrator URL')
+    parser.add_argument('--redis-host', default='localhost', help='Redis host')
+    parser.add_argument('--redis-port', type=int, default=6379, help='Redis port')
+    parser.add_argument('--config-file', default='worker_config.json', help='Configuration file name')
     
     args = parser.parse_args()
     
-    # Run enrollment
     enroller = WorkerEnroller(
         orchestrator_url=args.orchestrator_url,
         redis_host=args.redis_host,

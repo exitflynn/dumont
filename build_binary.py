@@ -82,9 +82,9 @@ def main():
         # Add all necessary modules
         "--hidden-import", "worker",
         "--hidden-import", "worker.worker_agent",
-        "--hidden-import", "worker.legacy.benchmark",
-        "--hidden-import", "worker.legacy.model_loader",
-        "--hidden-import", "worker.legacy.device_info",
+        "--hidden-import", "worker.benchmark",
+        "--hidden-import", "worker.model_loader",
+        "--hidden-import", "worker.device_info",
         "--hidden-import", "core.redis_client",
         "--hidden-import", "core.job_dispatcher",
         

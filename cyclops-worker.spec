@@ -18,10 +18,9 @@ hiddenimports = [
     'worker',
     'worker.cli',
     'worker.worker_agent',
-    'worker.legacy',
-    'worker.legacy.benchmark',
-    'worker.legacy.model_loader',
-    'worker.legacy.device_info',
+    'worker.benchmark',
+    'worker.model_loader',
+    'worker.device_info',
     
     # Core modules
     'core',

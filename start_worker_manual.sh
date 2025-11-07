@@ -1,15 +1,11 @@
 #!/bin/bash
 
-# CycleOPS Worker Startup Script - Manual
-# Run this on your device to start the worker and register with orchestrator
-
 set -e
 
-echo "🚀 CycleOPS Worker Agent"
+echo "CycleOPS Worker Agent"
 echo "========================"
 echo ""
 
-# Configuration
 ORCHESTRATOR_URL="${ORCHESTRATOR_URL:-http://localhost:5000}"
 REDIS_HOST="${REDIS_HOST:-localhost}"
 REDIS_PORT="${REDIS_PORT:-6380}"
@@ -21,15 +17,14 @@ echo "  Redis: $REDIS_HOST:$REDIS_PORT"
 echo "  Worker: $WORKER_NAME"
 echo ""
 
-# Check if orchestrator is accessible
-echo "⏳ Checking orchestrator availability..."
+echo "Checking orchestrator availability..."
 for i in {1..10}; do
     if curl -sf "$ORCHESTRATOR_URL/api/health" > /dev/null 2>&1; then
-        echo "✅ Orchestrator is accessible!"
+        echo "Orchestrator is accessible!"
         break
     fi
     if [ $i -eq 10 ]; then
-        echo "❌ Could not reach orchestrator at $ORCHESTRATOR_URL"
+        echo "Could not reach orchestrator at $ORCHESTRATOR_URL"
         echo "   Make sure orchestrator is running:"
         echo "   cd /Users/akshittyagi/projects/lops"
         echo "   docker-compose up -d orchestrator"
@@ -40,11 +35,10 @@ for i in {1..10}; do
 done
 
 echo ""
-echo "👂 Worker is now listening for jobs..."
+echo "Worker is now listening for jobs..."
 echo "   Stop with: Ctrl+C"
 echo ""
 
-# Start the worker
 cd /Users/akshittyagi/projects/dumont
 export PYTHONUNBUFFERED=1
 python3 << 'PYTHON_EOF'
@@ -52,7 +46,6 @@ import os
 import sys
 import logging
 
-# Setup logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -70,37 +63,29 @@ redis_host = os.environ.get('REDIS_HOST', 'localhost')
 redis_port = int(os.environ.get('REDIS_PORT', '6379'))
 
 try:
-    # Create worker agent
-    logger.info(f"Creating WorkerAgent with redis_host={redis_host}, redis_port={redis_port}")
+    from core.redis_client import RedisClient
+    r = RedisClient(host=redis_host, port=int(redis_port))
+    if not r.is_connected():
+        logger.error(f"Cannot connect to Redis at {redis_host}:{redis_port}")
+        sys.exit(1)
+    logger.info(f"Redis connected")
+    logger.info(f"Registering worker with orchestrator...")
+    
+    from worker.worker_agent import WorkerAgent
     worker = WorkerAgent(
         orchestrator_url=orchestrator_url,
         redis_host=redis_host,
-        redis_port=redis_port
+        redis_port=int(redis_port)
     )
     
-    logger.info(f"Testing Redis connection...")
-    if not worker.redis_client.is_connected():
-        logger.error("❌ Cannot connect to Redis at {redis_host}:{redis_port}")
-        sys.exit(1)
-    logger.info(f"✅ Redis connected")
-    
-    # Register with orchestrator
-    logger.info(f"🔗 Registering worker with orchestrator...")
     if worker.register_with_orchestrator():
-        logger.info("✅ Worker registered successfully!")
-        logger.info(f"   Worker ID: {worker.worker_id}")
-        
-        # Start listening for jobs
-        logger.info("👂 Worker is listening for jobs on Redis queues...")
+        logger.info("Worker registered successfully!")
         worker.start_job_loop()
     else:
-        logger.error("❌ Failed to register worker with orchestrator")
+        logger.error("Failed to register worker with orchestrator")
         sys.exit(1)
-        
-except KeyboardInterrupt:
-    logger.info("\n🛑 Worker stopped by user")
-    sys.exit(0)
+
 except Exception as e:
-    logger.error(f"❌ Fatal error: {e}", exc_info=True)
+    logger.error(f"Fatal error: {e}", exc_info=True)
     sys.exit(1)
 PYTHON_EOF
