@@ -4,7 +4,7 @@
 
 set -e
 
-REPO_URL="https://github.com/exitflynn/sark.git"
+REPO_URL="https://github.com/exitflynn/dumont.git"
 INSTALL_DIR="$HOME/dumont"
 BRANCH="main"
 
@@ -107,7 +107,7 @@ clone_repo() {
     git clone --depth 1 --branch $BRANCH $REPO_URL "$INSTALL_DIR"
     print_success "Repository cloned to $INSTALL_DIR"
     
-    cd "$INSTALL_DIR/dumont"
+    cd "$INSTALL_DIR"
 }
 
 install_python_deps() {
