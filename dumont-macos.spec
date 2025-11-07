@@ -88,7 +88,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='cyclops-worker',
+    name='dumont',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

@@ -43,9 +43,9 @@ echo "  ✓ Hooks directory ready"
 # Build binary
 echo ""
 echo "▶ Building binary with PyInstaller..."
-pyinstaller --clean cyclops-worker-linux.spec
+pyinstaller --clean dumont-linux.spec
 
-if [ -f "dist/cyclops-worker" ]; then
+if [ -f "dist/dumont" ]; then
     echo "  ✓ Binary created successfully"
 else
     echo "  ✗ Binary creation failed"
@@ -57,17 +57,17 @@ echo ""
 echo "▶ Creating distribution package..."
 
 mkdir -p dist_binary
-cp dist/cyclops-worker dist_binary/
-chmod +x dist_binary/cyclops-worker
+cp dist/dumont dist_binary/
+chmod +x dist_binary/dumont
 
 # Get binary size
-SIZE=$(du -h dist_binary/cyclops-worker | awk '{print $1}')
+SIZE=$(du -h dist_binary/dumont | awk '{print $1}')
 echo "  ✓ Binary size: $SIZE"
 
 # Test binary
 echo ""
 echo "▶ Testing binary..."
-if ./dist_binary/cyclops-worker --help > /dev/null 2>&1; then
+if ./dist_binary/dumont --help > /dev/null 2>&1; then
     echo "  ✓ Binary is functional"
 else
     echo "  ⚠ Warning: Binary test failed"
@@ -84,22 +84,22 @@ Quick Start:
 -----------
 
 1. Check system info:
-   ./cyclops-worker info
+   ./dumont info
 
 2. Validate requirements:
-   ./cyclops-worker validate
+   ./dumont validate
 
 3. Test connectivity:
-   ./cyclops-worker test --orchestrator-url http://192.168.1.100:5000
+   ./dumont test --orchestrator-url http://192.168.1.100:5000
 
 4. Enroll worker:
-   ./cyclops-worker enroll --orchestrator-url http://192.168.1.100:5000
+   ./dumont enroll --orchestrator-url http://192.168.1.100:5000
 
 5. Start worker:
-   ./cyclops-worker start --orchestrator-url http://192.168.1.100:5000
+   ./dumont start --orchestrator-url http://192.168.1.100:5000
 
 For help:
-   ./cyclops-worker --help
+   ./dumont --help
 
 System Requirements:
 -------------------
@@ -116,7 +116,7 @@ Model Support:
 
 Distribution:
 ------------
-Just copy the 'cyclops-worker' file to any Linux machine and run it.
+Just copy the 'dumont' file to any Linux machine and run it.
 No installation needed!
 EOF
 
@@ -128,10 +128,10 @@ echo "▶ Creating deployment archive..."
 
 PLATFORM=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
-ARCHIVE_NAME="cyclops-worker-${PLATFORM}-${ARCH}.tar.gz"
+ARCHIVE_NAME="dumont-${PLATFORM}-${ARCH}.tar.gz"
 
 cd dist_binary
-tar czf "../${ARCHIVE_NAME}" cyclops-worker README.txt
+tar czf "../${ARCHIVE_NAME}" dumont README.txt
 cd ..
 
 echo "  ✓ Created ${ARCHIVE_NAME}"
@@ -142,16 +142,16 @@ echo "╔═══════════════════════�
 echo "║                    Build Successful! ✓                         ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
-echo "Binary:   dist_binary/cyclops-worker (${SIZE})"
+echo "Binary:   dist_binary/dumont (${SIZE})"
 echo "Archive:  ${ARCHIVE_NAME}"
 echo ""
 echo "To test locally:"
-echo "  ./dist_binary/cyclops-worker info"
+echo "  ./dist_binary/dumont info"
 echo ""
 echo "To distribute:"
-echo "  Just copy 'cyclops-worker' to target machines - no Python needed!"
+echo "  Just copy 'dumont' to target machines - no Python needed!"
 echo ""
 echo "To deploy to remote machine:"
-echo "  scp dist_binary/cyclops-worker user@remote:~/"
-echo "  ssh user@remote './cyclops-worker start --orchestrator-url http://IP:5000'"
+echo "  scp dist_binary/dumont user@remote:~/"
+echo "  ssh user@remote './dumont start --orchestrator-url http://IP:5000'"
 echo ""

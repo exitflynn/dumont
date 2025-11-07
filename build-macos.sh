@@ -58,9 +58,9 @@ echo "  ⚠️  NOTE: CoreML native bindings may not work in binary."
 echo "  Consider using Python package distribution for macOS instead."
 echo ""
 
-pyinstaller --clean cyclops-worker-macos.spec
+pyinstaller --clean dumont-macos.spec
 
-if [ -f "dist/cyclops-worker" ]; then
+if [ -f "dist/dumont" ]; then
     echo "  ✓ Binary created successfully"
 else
     echo "  ✗ Binary creation failed"
@@ -72,17 +72,17 @@ echo ""
 echo "▶ Creating distribution package..."
 
 mkdir -p dist_binary
-cp dist/cyclops-worker dist_binary/
-chmod +x dist_binary/cyclops-worker
+cp dist/dumont dist_binary/
+chmod +x dist_binary/dumont
 
 # Get binary size
-SIZE=$(du -h dist_binary/cyclops-worker | awk '{print $1}')
+SIZE=$(du -h dist_binary/dumont | awk '{print $1}')
 echo "  ✓ Binary size: $SIZE"
 
 # Test binary (basic check)
 echo ""
 echo "▶ Testing binary..."
-if ./dist_binary/cyclops-worker --help > /dev/null 2>&1; then
+if ./dist_binary/dumont --help > /dev/null 2>&1; then
     echo "  ✓ Binary is functional"
 else
     echo "  ⚠ Warning: Binary test failed"
@@ -107,10 +107,10 @@ Quick Start (ONNX only):
 -----------
 
 1. Check system info:
-   ./cyclops-worker info
+   ./dumont info
 
 2. Start worker:
-   ./cyclops-worker start --orchestrator-url http://192.168.1.100:5000
+   ./dumont start --orchestrator-url http://192.168.1.100:5000
 
 System Requirements:
 -------------------
@@ -123,7 +123,7 @@ For CoreML Support:
 Use Python installation instead:
    ./install.sh
    source activate_worker.sh
-   cyclops-worker start --orchestrator-url http://IP:5000
+   dumont start --orchestrator-url http://IP:5000
 EOF
 
 echo "  ✓ Created distribution README"
@@ -134,10 +134,10 @@ echo "▶ Creating deployment archive..."
 
 PLATFORM="darwin"
 ARCH=$(uname -m)
-ARCHIVE_NAME="cyclops-worker-${PLATFORM}-${ARCH}-onnx.tar.gz"
+ARCHIVE_NAME="dumont-${PLATFORM}-${ARCH}-onnx.tar.gz"
 
 cd dist_binary
-tar czf "../${ARCHIVE_NAME}" cyclops-worker README-MACOS.txt
+tar czf "../${ARCHIVE_NAME}" dumont README-MACOS.txt
 cd ..
 
 echo "  ✓ Created ${ARCHIVE_NAME}"
@@ -151,14 +151,14 @@ echo ""
 echo "⚠️  IMPORTANT:"
 echo "   This binary supports ONNX models but NOT CoreML (native binding issues)"
 echo ""
-echo "Binary:   dist_binary/cyclops-worker (${SIZE})"
+echo "Binary:   dist_binary/dumont (${SIZE})"
 echo "Archive:  ${ARCHIVE_NAME}"
 echo ""
 echo "For ONNX benchmarking:"
-echo "  ./dist_binary/cyclops-worker start --orchestrator-url http://IP:5000"
+echo "  ./dist_binary/dumont start --orchestrator-url http://IP:5000"
 echo ""
 echo "For FULL CoreML support, use Python package instead:"
 echo "  ./install.sh"
 echo "  source activate_worker.sh"
-echo "  cyclops-worker start --orchestrator-url http://IP:5000"
+echo "  dumont start --orchestrator-url http://IP:5000"
 echo ""
