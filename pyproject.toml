@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dumont-worker"
+version = "0.1.0"
+description = "Distributed ML inference worker for CycleOPS orchestration"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "CycleOPS Team"}
+]
+keywords = ["ml", "inference", "distributed", "worker", "benchmark"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: System :: Benchmark",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "psutil>=5.9.0",
+    "numpy>=1.24.0,<2.0",
+    "requests>=2.31.0",
+    "redis>=5.0.0",
+    "onnxruntime>=1.16.0",
+]
+
+[project.optional-dependencies]
+macos = [
+    "coremltools>=8.0,<9.0",
+    "Pillow>=10.0.0",
+]
+windows = [
+    "onnxruntime-directml>=1.16.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+]
+build = [
+    "pyinstaller>=6.0.0",
+]
+
+[project.scripts]
+dumont = "worker.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/exitflynn/dumont"
+Repository = "https://github.com/exitflynn/dumont"
+Issues = "https://github.com/exitflynn/dumont/issues"
+
+[tool.setuptools.packages.find]
+include = ["worker*", "core*"]
+exclude = ["tests*", "*.pyc", "__pycache__"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.md"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
