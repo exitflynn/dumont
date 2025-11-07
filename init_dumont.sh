@@ -1,5 +1,5 @@
 #!/bin/bash
-# Universal CycleOPS Worker Installer
+# Universal Dumont Installer
 # Downloads, builds, and installs the worker binary for any platform
 
 set -e

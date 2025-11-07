@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
-PyInstaller spec file for CycleOPS Worker - Linux (ONNX with CPU/CUDA support)
+PyInstaller spec file for Dumont - Linux (ONNX with CPU/CUDA support)
 This creates a binary with ONNX Runtime support for CPU and optionally GPU.
 """
 

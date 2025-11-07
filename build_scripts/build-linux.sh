@@ -1,10 +1,10 @@
 #!/bin/bash
-# Build CycleOPS Worker Binary for Linux (ONNX support)
+# Build Dumont Binary for Linux (ONNX support)
 
 set -e
 
 echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║      CycleOPS Worker - Linux Binary Build (ONNX Only)         ║"
+echo " ║      Dumont - Linux Binary Build (ONNX Only)                 ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
 
@@ -75,7 +75,7 @@ fi
 
 # Create README for distribution
 cat > dist_binary/README.txt << 'EOF'
-CycleOPS Worker - Linux Binary (ONNX Support)
+Dumont - Linux Binary (ONNX Support)
 ==============================================
 
 This is a standalone executable for Linux with ONNX Runtime support.

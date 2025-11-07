@@ -1,11 +1,11 @@
 #!/bin/bash
-# CycleOPS Worker - Platform-Aware Build Script
+# Dumont - Platform-Aware Build Script
 # Automatically detects platform and calls appropriate build script
 
 set -e
 
 echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║           CycleOPS Worker - Platform Detection                ║"
+echo " ║                 Dumont - Platform Detection                  ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
 

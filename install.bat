@@ -1,11 +1,11 @@
 @echo off
-REM CycleOPS Worker - Installation Script for Windows
+REM Dumont - Installation Script for Windows
 REM This script sets up a clean Python environment and installs the worker
 
 setlocal enabledelayedexpansion
 
 echo ╔════════════════════════════════════════════════════════════════╗
-echo ║           CycleOPS Worker - Installation Script               ║
+echo  ║           Dumont - Installation Script                       ║
 echo ╚════════════════════════════════════════════════════════════════╝
 echo.
 
@@ -59,7 +59,7 @@ echo ✓ pip upgraded
 
 REM Step 4: Install worker package
 echo.
-echo ▶ Installing CycleOPS Worker Package
+echo ▶ Installing Dumont Package
 echo ──────────────────────────────────────────────────────────────────
 echo ℹ Windows detected - installing with DirectML support
 pip install -e ".[windows]"
@@ -88,9 +88,9 @@ echo ─────────────────────────
 
 (
 echo @echo off
-echo REM Activate CycleOPS Worker environment
+echo REM Activate Dumont environment
 echo call .venv_worker\Scripts\activate.bat
-echo echo ✓ CycleOPS Worker environment activated
+echo echo ✓ Dumont environment activated
 echo echo.
 echo echo Available commands:
 echo echo   cyclops-worker start --orchestrator-url ^<url^>

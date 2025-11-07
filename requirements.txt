@@ -1,4 +1,4 @@
-# CycleOPS Worker Agent Dependencies
+# Dumont Agent Dependencies
 
 # Core benchmarking
 onnxruntime>=1.16.0

@@ -1,5 +1,5 @@
 """
-CycleOPS Worker - Setup Configuration
+Dumont - Setup Configuration
 Packaging configuration for worker agent distribution.
 """
 
@@ -39,11 +39,11 @@ universal_requirements = [
 setup(
     name="cyclops-worker",
     version=version,
-    description="CycleOPS Distributed Benchmarking Worker Agent",
+    description="sark Distributed Benchmarking Worker Agent",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author="CycleOPS Team",
-    url="https://github.com/yourusername/cyclops",
+    author="exitflynn and AI",
+    url="https://github.com/exitflynn/dumont",
     
     # Package discovery
     packages=find_packages(include=['worker', 'worker.*', 'core']),

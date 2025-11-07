@@ -1,5 +1,5 @@
 #!/bin/bash
-# CycleOPS Worker - Installation Script for macOS/Linux
+# Dumont - Installation Script for macOS/Linux
 # This script sets up a clean Python environment and installs the worker
 
 set -e  # Exit on error
@@ -17,7 +17,7 @@ VENV_NAME=".venv_worker"
 PYTHON_MIN_VERSION="3.8"
 
 echo -e "${CYAN}╔════════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║           CycleOPS Worker - Installation Script               ║${NC}"
+echo -e "${CYAN} ║                    Dumont - Installation Script             ║${NC}"
 echo -e "${CYAN}╔════════════════════════════════════════════════════════════════╗${NC}"
 echo ""
 
@@ -83,7 +83,7 @@ pip install --quiet --upgrade pip setuptools wheel
 echo -e "${GREEN}✓ pip upgraded${NC}"
 
 # Step 4: Install worker package
-print_section "Installing CycleOPS Worker Package"
+print_section "Installing Dumont Package"
 
 # Detect platform and install appropriate extras
 PLATFORM=$(uname -s)
@@ -115,9 +115,9 @@ print_section "Creating Activation Helper"
 
 cat > activate_worker.sh << 'EOF'
 #!/bin/bash
-# Activate CycleOPS Worker environment
+# Activate Dumont environment
 source .venv_worker/bin/activate
-echo "✓ CycleOPS Worker environment activated"
+echo "✓ Dumont environment activated"
 echo ""
 echo "Available commands:"
 echo "  cyclops-worker start --orchestrator-url <url>"

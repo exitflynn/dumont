@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.venv-worker/
+.venv_worker/
+.env_worker/
+.venv/
+.env/
+venv/
+ENV/
+env/
+
+# IDEs
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+*.md
+
+# Logs
+*.log
+
+# Models
+*.mlmodel
+*.onnx
+
+# Dumont specific
+worker_config.json
+.worker_registration.json
+model_cache/
+offline_bundle/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Distribution
+*.tar.gz
+*.whl
+*.zip
+
+# OS specific
+Thumbs.db

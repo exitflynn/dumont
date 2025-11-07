@@ -5,12 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "dumont-worker"
 version = "0.1.0"
-description = "Distributed ML inference worker for CycleOPS orchestration"
+description = "Distributed ML inference worker for sark orchestration"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
-    {name = "CycleOPS Team"}
+    {name = "exitflynn and AI"}
 ]
 keywords = ["ml", "inference", "distributed", "worker", "benchmark"]
 classifiers = [

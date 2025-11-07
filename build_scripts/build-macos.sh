@@ -1,11 +1,11 @@
 #!/bin/bash
-# Build CycleOPS Worker Binary for macOS with CoreML Support
+# Build Dumont Binary for macOS with CoreML Support
 # This version uses a different approach to handle CoreML native bindings
 
 set -e
 
 echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║      CycleOPS Worker - macOS Binary Build (with CoreML)       ║"
+echo " ║      Dumont - macOS Binary Build (with CoreML)               ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
 
@@ -90,7 +90,7 @@ fi
 
 # Create README for distribution
 cat > dist_binary/README-MACOS.txt << 'EOF'
-CycleOPS Worker - macOS Binary
+Dumont - macOS Binary
 ===============================
 
 ⚠️  IMPORTANT NOTE ABOUT COREML:

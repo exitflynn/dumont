@@ -1,5 +1,5 @@
 @echo off
-REM CycleOPS Worker Startup Script - Windows
+REM Dumont Startup Script - Windows
 REM Handles Windows-specific setup and starts the worker agent
 REM
 REM Usage:
@@ -67,7 +67,7 @@ REM Print header
 cls
 echo.
 echo ====================================================================
-echo                     CycleOPS Worker Agent
+echo                     Dumont Agent
 echo ====================================================================
 echo.
 
@@ -229,7 +229,7 @@ echo Worker stopped
 exit /b 0
 
 :show_help
-echo CycleOPS Worker Startup Script - Windows
+echo Dumont Startup Script - Windows
 echo.
 echo Usage: %0 [options]
 echo.

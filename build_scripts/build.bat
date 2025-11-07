@@ -1,8 +1,8 @@
 @echo off
-REM Build CycleOPS Worker Binary for Windows
+REM Build Dumont Binary for Windows
 
 echo ╔════════════════════════════════════════════════════════════════╗
-echo ║        CycleOPS Worker - Binary Build Script                  ║
+echo   ║        Dumont - Binary Build Script                        ║
 echo ╚════════════════════════════════════════════════════════════════╝
 echo.
 
@@ -39,7 +39,7 @@ echo   ✓ Dependencies installed
 REM Build binary
 echo.
 echo ▶ Building binary with PyInstaller...
-pyinstaller --clean cyclops-worker-windows.spec
+pyinstaller --clean cyclops-worker.spec
 
 if exist "dist\cyclops-worker.exe" (
     echo   ✓ Binary created successfully
@@ -73,7 +73,7 @@ if %ERRORLEVEL% EQU 0 (
 
 REM Create README for distribution
 (
-echo CycleOPS Worker - Standalone Binary
+echo Dumont - Standalone Binary
 echo ====================================
 echo.
 echo This is a standalone executable that requires no Python installation.

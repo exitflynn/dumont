@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
-PyInstaller spec file for CycleOPS Worker - macOS (ONNX Only)
+PyInstaller spec file for Dumont - macOS (ONNX Only)
 This creates a binary without CoreML support due to native library limitations.
 For CoreML support, use the Python package distribution instead.
 """

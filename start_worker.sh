@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CycleOPS Worker Startup Script - Cross-Platform
+# Dumont Startup Script - Cross-Platform
 # Handles platform-specific setup and starts the worker agent
 #
 # Usage:
@@ -63,7 +63,7 @@ print_success() {
 }
 
 show_help() {
-    echo "CycleOPS Worker Startup Script"
+    echo "Dumont Startup Script"
     echo ""
     echo "Usage: $0 [options]"
     echo ""
@@ -117,7 +117,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Print header
-print_header "CycleOPS Worker Agent"
+print_header "Dumont Agent"
 
 # Step 1: Check Python
 echo "${BLUE}[1/6] Checking Python Environment${NC}"

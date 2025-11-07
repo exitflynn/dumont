@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
-PyInstaller spec file for CycleOPS Worker - Windows (ONNX with DirectML support)
+PyInstaller spec file for Dumont - Windows (ONNX with DirectML support)
 This creates a binary with ONNX Runtime support for CPU and DirectML (GPU).
 """
 

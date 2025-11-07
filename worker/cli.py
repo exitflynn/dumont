@@ -1,8 +1,3 @@
-"""
-CycleOPS Worker - Command Line Interface
-Main entry point for worker commands.
-"""
-
 import sys
 import argparse
 import logging
@@ -40,7 +35,7 @@ def cmd_start(args):
         if parsed.hostname:
             redis_host = parsed.hostname
     
-    print(f"Starting CycleOPS Worker")
+    print(f"Starting Dumont")
     print(f"   Orchestrator: {args.orchestrator_url}")
     print(f"   Redis: {redis_host}:{args.redis_port}")
     
@@ -94,7 +89,7 @@ def cmd_info(args):
         sys.path.insert(0, str(Path.cwd()))
         from worker.device_info import get_device_info, get_compute_units
         
-        print("CycleOPS Worker - System Information")
+        print("Dumont - System Information")
         print("=" * 70)
         
         print(f"\nPlatform:")
@@ -141,7 +136,7 @@ def cmd_validate(args):
     
     setup_logging(args.verbose)
     
-    print("CycleOPS Worker - Validation")
+    print("Dumont - Validation")
     print("=" * 70)
     
     version = sys.version_info
@@ -199,7 +194,7 @@ def cmd_test(args):
     
     setup_logging(args.verbose)
     
-    print("CycleOPS Worker - Connectivity Test")
+    print("Dumont - Connectivity Test")
     print("=" * 70)
     
     redis_host = args.redis_host
@@ -246,7 +241,7 @@ def cmd_test(args):
 def main():
     parser = argparse.ArgumentParser(
         prog='dumont',
-        description='CycleOPS Worker - Distributed ML Inference Benchmark Worker'
+        description='Dumont - Distributed ML Inference Benchmark Worker'
     )
     
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
