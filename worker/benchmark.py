@@ -7,7 +7,7 @@ import time
 import psutil
 import numpy as np
 from typing import Dict, List, Optional
-from model_loader import ModelLoader
+from .model_loader import ModelLoader
 
 
 class Benchmark:

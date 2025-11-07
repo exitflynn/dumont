@@ -12,16 +12,10 @@ import os
 import threading
 from typing import Dict, Optional, List
 
-# Add parent directory to path for imports
-import sys
-_project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if _project_root not in sys.path:
-    sys.path.insert(0, _project_root)
-
-# Import benchmarking modules
-from model_loader import ModelLoader
-from benchmark import Benchmark
-from device_info import get_device_info, get_compute_units
+# Import benchmarking modules using relative imports
+from .model_loader import ModelLoader
+from .benchmark import Benchmark
+from .device_info import get_device_info, get_compute_units
 
 
 logger = logging.getLogger(__name__)
@@ -313,7 +307,7 @@ class WorkerAgent:
     def get_job_queue_names(self) -> List[str]:
         from core.job_dispatcher import JobDispatcher
         capabilities = get_compute_units()
-        queues = JobDispatcher.get_worker_queue_priority(self.worker_id, capabilities)
+        queues = JobDispatcher.get_worker_queue_priority(str(self.worker_id), capabilities)
         
         return queues
     
