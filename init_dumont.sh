@@ -11,7 +11,7 @@ BRANCH="main"
 print_header() {
     echo ""
     echo "╔════════════════════════════════════════════════════════════════╗"
-    echo "║           CycleOPS Worker - Universal Installer               ║"
+    echo " ║         Dumont: On-Device Inference Benchmarking             ║"
     echo "╚════════════════════════════════════════════════════════════════╝"
     echo ""
 }
