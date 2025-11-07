@@ -25,22 +25,22 @@ def cmd_start(args):
     
     setup_logging(args.verbose)
     
-    if not args.orchestrator_url:
+    if not args.host:
         print("Error: --host is required")
         sys.exit(1)
     
     redis_host = args.redis_host
-    if args.redis_host == 'localhost' and not args.orchestrator_url.startswith('http://localhost') and not args.orchestrator_url.startswith('http://127.0.0.1'):
-        parsed = urlparse(args.orchestrator_url)
+    if args.redis_host == 'localhost' and not args.host.startswith('http://localhost') and not args.host.startswith('http://127.0.0.1'):
+        parsed = urlparse(args.host)
         if parsed.hostname:
             redis_host = parsed.hostname
     
     print(f"Starting Dumont")
-    print(f"   Orchestrator: {args.orchestrator_url}")
+    print(f"   Orchestrator: {args.host}")
     print(f"   Redis: {redis_host}:{args.redis_port}")
     
     worker = WorkerAgent(
-        orchestrator_url=args.orchestrator_url,
+        orchestrator_url=args.host,
         redis_host=redis_host,
         redis_port=args.redis_port
     )
@@ -64,13 +64,13 @@ def cmd_enroll(args):
     
     setup_logging(args.verbose)
     
-    if not args.orchestrator_url:
+    if not args.host:
         print("Error: --host is required")
         sys.exit(1)
     
     redis_host = args.redis_host
     enroller = WorkerEnroller(
-        orchestrator_url=args.orchestrator_url,
+        orchestrator_url=args.host,
         redis_host=redis_host,
         redis_port=args.redis_port,
     )
@@ -198,8 +198,8 @@ def cmd_test(args):
     print("=" * 70)
     
     redis_host = args.redis_host
-    if args.redis_host == 'localhost' and not args.orchestrator_url.startswith('http://localhost') and not args.orchestrator_url.startswith('http://127.0.0.1'):
-        parsed = urlparse(args.orchestrator_url)
+    if args.redis_host == 'localhost' and not args.host.startswith('http://localhost') and not args.host.startswith('http://127.0.0.1'):
+        parsed = urlparse(args.host)
         if parsed.hostname:
             redis_host = parsed.hostname
     
@@ -212,17 +212,17 @@ def cmd_test(args):
     except Exception as e:
         print(f"   Error: {e}")
     
-    print(f"\nOrchestrator ({args.orchestrator_url}):")
+    print(f"\nOrchestrator ({args.host}):")
     try:
         import requests
-        response = requests.get(f"{args.orchestrator_url}/api/health", timeout=5)
+        response = requests.get(f"{args.host}/api/health", timeout=5)
         if response.status_code == 200:
             print(f"   Reachable (HTTP {response.status_code})")
         else:
             print(f"   Responded with HTTP {response.status_code}")
     except requests.exceptions.ConnectionError:
         print(f"   Cannot connect")
-        print(f"      Make sure orchestrator is running at {args.orchestrator_url}")
+        print(f"      Make sure orchestrator is running at {args.host}")
     except Exception as e:
         print(f"   Error: {e}")
     

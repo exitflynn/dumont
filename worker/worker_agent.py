@@ -371,7 +371,7 @@ def main():
     )
     
     worker = WorkerAgent(
-        orchestrator_url=args.orchestrator_url,
+        orchestrator_url=args.host,
         redis_host=args.redis_host,
         redis_port=args.redis_port
     )
