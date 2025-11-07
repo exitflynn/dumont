@@ -245,17 +245,8 @@ def cmd_test(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='cyclops-worker',
-        description='CycleOPS Distributed Benchmarking Worker',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Commands:
-  start      Start the worker agent
-  enroll     Register this machine with the orchestrator
-  info       Display system information and capabilities
-  validate   Check installation and dependencies
-  test       Test connectivity to orchestrator and Redis
-        """
+        prog='dumont',
+        description='CycleOPS Worker - Distributed ML Inference Benchmark Worker'
     )
     
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
