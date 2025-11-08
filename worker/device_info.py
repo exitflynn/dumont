@@ -1,8 +1,3 @@
-"""
-Device information detection module.
-Collects hardware and OS information for benchmarking reports.
-"""
-
 import platform
 import psutil
 import sys
@@ -65,7 +60,6 @@ def get_device_udid() -> str:
         except:
             pass
     
-    # Windows or fallback: Use UUID based on hostname + MAC address
     try:
         hostname = platform.node()
         mac_address = uuid.getnode()
@@ -74,28 +68,17 @@ def get_device_udid() -> str:
     except:
         pass
     
-    # Last resort: Generate UUID
     return str(uuid.uuid4())
 
 
 def get_device_info() -> Dict[str, Optional[str]]:
-    """
-    Collect device information including hardware specs and OS details.
-    
-    Returns:
-        Dictionary containing device information
-    """
-    # System information
     system = platform.system()
     os_version = platform.version()
     
-    # Processor information
     processor = platform.processor()
     
-    # RAM information
     ram_gb = psutil.virtual_memory().total / (1024 ** 3)
     
-    # Try to get more detailed CPU info
     cpu_info = processor
     if hasattr(platform, 'mac_ver'):
         # macOS
@@ -106,14 +89,12 @@ def get_device_info() -> Dict[str, Optional[str]]:
             if result.returncode == 0:
                 cpu_info = result.stdout.strip()
         except Exception as e:
-            print(f"[DEBUG] Failed to get CPU brand: {e}")
+            print(f"Failed to get CPU brand: {e}")
             pass
     
-    # GPU information (basic detection)
     discrete_gpu = None
     vram = None
     
-    # Try to detect GPU on macOS
     if system == "Darwin":
         try:
             import subprocess
@@ -219,10 +200,6 @@ def get_compute_units() -> list:
                 if 'OpenVINO;GPU' not in units:
                     units.append('OpenVINO;GPU')
         
-        # CoreML support via ONNX Runtime (if available)
-        if 'CoreMLExecutionProvider' in available_providers:
-            if 'CoreML' not in units:
-                units.append('CoreML')
     except ImportError:
         pass
     

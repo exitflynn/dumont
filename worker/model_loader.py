@@ -127,7 +127,6 @@ class ModelLoader:
                             "CoreML.framework native bindings are not available. "
                         )
                     else:
-                        # Other error during test prediction - may be input shape mismatch, that's OK
                         print(f"CoreML model loaded (warning during test: {framework_error})")
                 
                 return
@@ -264,15 +263,6 @@ class ModelLoader:
         return input_data
     
     def run_inference(self, input_data: np.ndarray) -> Any:
-        """
-        Run inference on the model.
-        
-        Args:
-            input_data: Input data array
-            
-        Returns:
-            Model output
-        """
         if self.session is None:
             raise ValueError("Model not loaded. Call load_model() first.")
         
@@ -307,43 +297,11 @@ class ModelLoader:
                 result = self.coreml_model.predict({input_name: input_data})
                 return result
             except Exception as e:
-                # Check if this is a CoreML.framework unavailable error
-                if "Unable to load CoreML.framework" in str(e):
-                    # CoreML.framework not available - return simulated output
-                    print("[WARNING] CoreML.framework unavailable, using simulated output")
-                    # Return a dict with simulated output matching expected structure
-                    # Most CoreML models return multiple outputs, so create synthetic ones
-                    simulated_output = {}
-                    
-                    # Try to infer output structure from model spec
-                    try:
-                        if hasattr(self.coreml_model, 'get_spec'):
-                            spec = self.coreml_model.get_spec()
-                        elif hasattr(self.coreml_model, '_spec'):
-                            spec = self.coreml_model._spec
-                        
-                        if spec and hasattr(spec, 'description'):
-                            outputs = spec.description.output
-                            for out in outputs:
-                                # Create simulated output with same shape as expected
-                                if hasattr(out.type, 'multiArrayType'):
-                                    shape = tuple(out.type.multiArrayType.shape)
-                                    simulated_output[out.name] = np.random.rand(*shape).astype(np.float32)
-                                else:
-                                    # Fallback: create a reasonable output
-                                    simulated_output[out.name] = np.random.rand(1, 8400, 85).astype(np.float32)
-                    except Exception:
-                        # If we can't determine output structure, create a default
-                        simulated_output['output'] = np.random.rand(1, 8400, 85).astype(np.float32)
-                    
-                    return simulated_output if simulated_output else {'output': np.random.rand(1, 8400, 85).astype(np.float32)}
-                else:
-                    raise RuntimeError(f"CoreML inference failed: {e}")
+                raise RuntimeError(f"CoreML inference failed: {e}")
 
         raise RuntimeError("No valid backend available for inference")
     
     def cleanup(self):
-        """Clean up resources."""
         self.session = None
         # Clear coreml model if present
         if hasattr(self, 'coreml_model'):
@@ -352,7 +310,5 @@ class ModelLoader:
             except Exception:
                 self.coreml_model = None
         if self.model_path and os.path.exists(self.model_path):
-            # Optionally delete downloaded model
-            # os.remove(self.model_path)
             pass
 
