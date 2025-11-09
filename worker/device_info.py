@@ -6,6 +6,7 @@ import subprocess
 from typing import Dict, Optional
 
 
+
 def get_device_udid() -> str:
     """
     Get unique device identifier (UDID).
@@ -115,18 +116,27 @@ def get_device_info() -> Dict[str, Optional[str]]:
     
     if system == "Darwin":
         try:
-            import subprocess
             result = subprocess.run(
                 ['system_profiler', 'SPHardwareDataType'],
                 capture_output=True, text=True, timeout=5
             )
             if result.returncode == 0:
-                for line in result.stdout.split('\n'):
+                lines = result.stdout.split('\n')
+                model_name = None
+                model_id = None
+                
+                for line in lines:
                     if 'Model Name:' in line:
-                        device_name = line.split(':', 1)[-1].strip()
-                        break
+                        model_name = line.split(':', 1)[-1].strip()
+                    elif 'Model Identifier:' in line:
+                        model_id = line.split(':', 1)[-1].strip()
+                
+                if model_name and model_id:
+                    device_name = f"{model_name} ({model_id})"
+                elif model_name:
+                    device_name = model_name
         except Exception as e:
-            print(f"[DEBUG] Failed to get macOS model name: {e}")
+            pass
     
     elif system == "Linux":
         try:
