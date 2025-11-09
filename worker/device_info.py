@@ -166,49 +166,42 @@ def get_device_info() -> Dict[str, Optional[str]]:
     
     elif system == "Windows":
         # Windows: Try wmic first, then fallback to hostname_mac
-        print(f"[DEBUG] Windows device_name detection starting. Initial device_name: '{device_name}'")
         wmic_success = False
         
         try:
-            print(f"[DEBUG] Attempting wmic command...")
             result = subprocess.run(
                 ['wmic', 'computersystem', 'get', 'model'],
                 capture_output=True, text=True, timeout=5
             )
-            print(f"[DEBUG] wmic return code: {result.returncode}")
-            print(f"[DEBUG] wmic stdout: '{result.stdout}'")
-            print(f"[DEBUG] wmic stderr: '{result.stderr}'")
-            
             if result.returncode == 0:
                 lines = result.stdout.strip().split('\n')
                 print(f"[DEBUG] wmic output lines: {lines}")
-                if len(lines) > 1 and lines[1].strip():
-                    device_name = lines[1].strip()
-                    print(f"[DEBUG] Successfully set device_name from wmic: '{device_name}'")
-                    wmic_success = True
-                else:
-                    print(f"[DEBUG] wmic returned empty or insufficient lines")
+                # skip header and empty lines, find first non-empty model name (inconsistent wmic behaviour)
+                for i, line in enumerate(lines):
+                    stripped = line.strip()
+                    print(f"[DEBUG] Line {i}: '{stripped}'")
+                    if stripped and i > 0 and stripped != 'Model':
+                        device_name = stripped
+                        print(f"[DEBUG] Successfully set device_name from wmic line {i}: '{device_name}'")
+                        wmic_success = True
+                        break
+                if not wmic_success:
+                    print(f"[DEBUG] wmic returned no valid model name in lines")
         except Exception as e:
             print(f"[DEBUG] Exception during wmic: {type(e).__name__}: {e}")
         
-        # Fallback to hostname_mac if wmic failed
         if not wmic_success:
-            print(f"[DEBUG] Falling back to hostname_mac approach")
             try:
                 hostname = platform.node()
                 mac_address = uuid.getnode()
                 fallback_name = f"{hostname}_{mac_address}"
-                print(f"[DEBUG] hostname: '{hostname}', mac_address: '{mac_address}'")
                 print(f"[DEBUG] fallback_name: '{fallback_name}'")
                 if fallback_name and fallback_name != "_0":
                     device_name = fallback_name
-                    print(f"[DEBUG] Successfully set device_name from fallback: '{device_name}'")
                 else:
                     print(f"[DEBUG] Fallback produced invalid name: '{fallback_name}'")
             except Exception as e:
                 print(f"[DEBUG] Exception during fallback: {type(e).__name__}: {e}")
-        
-        print(f"[DEBUG] Final Windows device_name: '{device_name}'")
     
     # Device year (not easily detectable, will be None)
     device_year = None
