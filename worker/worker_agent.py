@@ -9,12 +9,14 @@ import time
 import requests
 import json
 import os
+import sys
+import subprocess
+import psutil
 import threading
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Tuple
 
 # Import benchmarking modules using relative imports
 from .model_loader import ModelLoader
-from .benchmark import Benchmark
 from .device_info import get_device_info, get_compute_units
 from core.constants import WORKER_STATUS_ACTIVE, WORKER_STATUS_BUSY, RESULT_STATUS_COMPLETE, RESULT_STATUS_FAILED
 
@@ -178,6 +180,101 @@ class WorkerAgent:
             logger.warning(f"Failed to update status: {e}")
             return False
     
+    def _monitor_subprocess(self, proc: psutil.Process, results: dict) -> None:
+        """
+        Monitor a subprocess's RAM and CPU usage at high frequency.
+        This runs in a separate thread and samples every 5ms to catch peak transient allocations.
+        
+        Args:
+            proc: psutil.Process object to monitor
+            results: Dictionary to store monitoring results
+        """
+        peak_ram = 0
+        cpu_samples = []
+        
+        try:
+            # Call cpu_percent() once outside the loop to establish a baseline
+            proc.cpu_percent(interval=None)
+            
+            while proc.is_running() and proc.status() != psutil.STATUS_ZOMBIE:
+                try:
+                    # Sample RAM and CPU
+                    current_ram = proc.memory_info().rss
+                    if current_ram > peak_ram:
+                        peak_ram = current_ram
+                    
+                    cpu_samples.append(proc.cpu_percent(interval=None))
+                
+                except psutil.NoSuchProcess:
+                    break
+                
+                time.sleep(0.005)
+        
+        except psutil.NoSuchProcess:
+            pass
+        
+        finally:
+            results['peak_ram_bytes'] = peak_ram
+            if cpu_samples:
+                results['average_cpu_percent'] = sum(cpu_samples) / len(cpu_samples)
+            else:
+                results['average_cpu_percent'] = 0.0
+    
+    def _run_benchmark_task(self, args: List[str]) -> Tuple[dict, float, float]:
+        """
+        Run a benchmark task in a subprocess and monitor its peak RAM and CPU usage.
+        
+        Args:
+            args: Command-line arguments for run_job_task.py
+        
+        Returns:
+            Tuple of (task_metrics_dict, peak_ram_mb, average_cpu_percent)
+        
+        Raises:
+            RuntimeError: If the subprocess fails
+        """
+        # Build command: python -m worker.run_job_task <args>
+        command = [sys.executable, "-m", "worker.run_job_task"] + args
+        
+        logger.debug(f"Running subprocess: {' '.join(command)}")
+        
+        proc = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        )
+        
+        ps_proc = psutil.Process(proc.pid)
+        
+        monitor_results = {}
+        monitor_thread = threading.Thread(
+            target=self._monitor_subprocess,
+            args=(ps_proc, monitor_results),
+            daemon=True,
+            name="SubprocessMonitor"
+        )
+        monitor_thread.start()
+        
+        # Wait for the process to finish
+        stdout, stderr = proc.communicate()
+        
+        monitor_thread.join(timeout=1.0)
+        
+        if proc.returncode != 0:
+            error_msg = stderr.decode().strip() if stderr else "Unknown error"
+            raise RuntimeError(f"Benchmark task failed: {error_msg}")
+        
+        try:
+            task_metrics = json.loads(stdout.decode())
+        except json.JSONDecodeError as e:
+            raise RuntimeError(f"Failed to parse task output: {e}")
+        
+        peak_ram_mb = monitor_results.get('peak_ram_bytes', 0) / (1024 ** 2)
+        average_cpu = monitor_results.get('average_cpu_percent', 0.0)
+        
+        return task_metrics, peak_ram_mb, average_cpu
+    
     def register_with_orchestrator(self) -> bool:
         try:
             device_info = get_device_info()
@@ -235,6 +332,21 @@ class WorkerAgent:
             return None
     
     def execute_benchmark_job(self, job_info: Dict) -> Dict:
+        """
+        Execute a benchmarking job using the subprocess-based approach.
+        
+        This method:
+        1. Downloads the model once
+        2. Spawns isolated subprocesses for 'load' and 'infer' tasks
+        3. Monitors each subprocess's peak RAM and CPU from outside
+        4. Combines results and cleans up
+        
+        Args:
+            job_info: Job information dictionary
+        
+        Returns:
+            Result dictionary with metrics
+        """
         job_id = job_info['job_id']
         model_url = job_info['model_url']
         compute_unit = job_info.get('compute_unit', 'CPU')
@@ -246,33 +358,52 @@ class WorkerAgent:
         
         self._update_status(WORKER_STATUS_BUSY)
         
-        start_time = time.time()
-        
         try:
             model_loader = ModelLoader(compute_unit=compute_unit)
-            benchmark = Benchmark()
-            
             model_path = model_loader.download_model(model_url)
-            metrics = benchmark.run_full_benchmark(
-                model_loader,
-                model_path,
-                num_inference_runs=num_inference_runs
-            )
             
-            import os
             file_size = os.path.getsize(model_path)
             filename = os.path.basename(model_path)
             
-            device_info = get_device_info()
-            model_loader.cleanup()
+            logger.info(f"Model downloaded: {filename} ({file_size / (1024**2):.2f} MB)")
             
+            load_args = [
+                "--task", "load",
+                "--model-path", model_path,
+                "--compute-unit", compute_unit
+            ]
+            
+            logger.debug("Running load task...")
+            load_metrics, peak_load_ram, avg_load_cpu = self._run_benchmark_task(load_args)
+            logger.info(f"Load completed: {load_metrics['LoadMsMedian']:.2f}ms, "
+                       f"Peak RAM: {peak_load_ram:.2f}MB, Avg CPU: {avg_load_cpu:.1f}%")
+            
+            infer_args = [
+                "--task", "infer",
+                "--model-path", model_path,
+                "--compute-unit", compute_unit,
+                "--num-runs", str(num_inference_runs)
+            ]
+            
+            logger.debug("Running inference task...")
+            infer_metrics, peak_infer_ram, avg_infer_cpu = self._run_benchmark_task(infer_args)
+            logger.info(f"Inference completed: {infer_metrics['InferenceMsMedian']:.2f}ms median, "
+                       f"Peak RAM: {peak_infer_ram:.2f}MB, Avg CPU: {avg_infer_cpu:.1f}%")
+            
+            try:
+                os.remove(model_path)
+                logger.debug(f"Cleaned up model file: {model_path}")
+            except Exception as e:
+                logger.warning(f"Failed to clean up model {model_path}: {e}")
+            
+            device_info = get_device_info()
             elapsed = time.time() - start_time
             
             result = {
                 'job_id': job_id,
                 'campaign_id': job_info.get('campaign_id'),
                 'worker_id': self.worker_id,
-                'status': 'Complete',
+                'status': RESULT_STATUS_COMPLETE,
                 'FileName': filename,
                 'FileSize': file_size,
                 'ComputeUnits': compute_unit,
@@ -284,10 +415,15 @@ class WorkerAgent:
                 'Ram': device_info.get('Ram') or 0,
                 'DiscreteGpu': device_info.get('DiscreteGpu') or '',
                 'VRam': device_info.get('VRam') or '',
-                **metrics
+                **load_metrics,
+                'PeakLoadRamUsage': float(peak_load_ram),
+                'AverageLoadCpuPercent': float(avg_load_cpu),
+                **infer_metrics,
+                'PeakInferenceRamUsage': float(peak_infer_ram),
+                'AverageInferenceCpuPercent': float(avg_infer_cpu),
             }
             
-            logger.info(f"Job {job_id} completed in {elapsed:.1f}s")
+            logger.info(f"Job {job_id} completed successfully in {elapsed:.1f}s")
             
             # Update status back to active
             self._update_status(WORKER_STATUS_ACTIVE)
@@ -306,7 +442,7 @@ class WorkerAgent:
                 'job_id': job_id,
                 'campaign_id': job_info.get('campaign_id'),
                 'worker_id': self.worker_id,
-                'status': 'Failed',
+                'status': RESULT_STATUS_FAILED,
                 'remark': str(e),
                 'FileName': '',
                 'FileSize': 0,
