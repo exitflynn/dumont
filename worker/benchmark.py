@@ -24,7 +24,8 @@ class Benchmark:
         load_time_ms = (time.perf_counter() - start_time) * 1000
         
         peak_ram = self._get_ram_usage_mb()
-        peak_ram_usage = max(0.0, peak_ram - baseline_ram)
+        # peak_ram_delta = max(0.0, peak_ram - baseline_ram)  # delta from baseline
+        peak_ram_usage = peak_ram
         
         return {
             'LoadMsMedian': float(load_time_ms),
@@ -46,7 +47,6 @@ class Benchmark:
         input_data = model_loader.create_sample_input()
         
         inference_times = []
-        ram_usage_during_inference = []
         
         for _ in range(num_runs):
             start_time = time.perf_counter()
@@ -57,13 +57,14 @@ class Benchmark:
             if current_ram > peak_ram:
                 peak_ram = current_ram
             
-            ram_delta = current_ram - baseline_ram
+            # ram_delta = current_ram - baseline_ram  # delta from baseline
             inference_times.append(inference_time_ms)
-            ram_usage_during_inference.append(ram_delta)
+            # ram_usage_during_inference.append(ram_delta)
         
         if len(inference_times) > 0:
             times_array = np.array(inference_times)
-            peak_ram_usage = max(0.0, peak_ram - baseline_ram)
+            # peak_ram_delta = max(0.0, peak_ram - baseline_ram)  # delta from baseline
+            peak_ram_usage = peak_ram  # absolute value
             return {
                 'InferenceMsMedian': float(np.median(times_array)),
                 'InferenceMsMin': float(np.min(times_array)),
