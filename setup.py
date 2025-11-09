@@ -63,7 +63,7 @@ setup(
     },
     
     # Python version requirement
-    python_requires='>=3.8',
+    python_requires='>=3.8,<3.13',
     
     # Entry points - creates CLI commands
     entry_points={
@@ -84,5 +84,6 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Operating System :: OS Independent",
+        "License :: OSI Approved :: MIT License",
     ],
 )

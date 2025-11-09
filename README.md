@@ -4,12 +4,32 @@ Worker node for [SARK](https://github.com/exitflynn/sark). Executes benchmarking
 
 ---
 
+## ⚠️ Python Version Requirement
+
+**Dumont requires Python 3.8 - 3.12**. Python 3.13+ is not yet supported due to CoreML native bindings.
+
+```bash
+# Check your Python version first
+python3 --version
+
+# If you have Python 3.13+, install Python 3.12:
+brew install python@3.12  # macOS
+# Then create a virtual environment with Python 3.12
+/opt/homebrew/bin/python3.12 -m venv .venv-dumont
+source .venv-dumont/bin/activate
+```
+
+---
+
 ## Command Line Interface
 ## Quick Start
 
 ### Option 1: pip install (Recommended)
 
 ```bash
+# Ensure you're using Python 3.8-3.12
+python3 --version
+
 # Install directly from GitHub
 pip install git+https://github.com/exitflynn/dumont.git
 

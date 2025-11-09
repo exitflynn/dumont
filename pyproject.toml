@@ -7,7 +7,7 @@ name = "dumont"
 version = "0.1.0"
 description = "Distributed ML inference worker for sark orchestration"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.8,<3.13"
 license = {text = "MIT"}
 authors = [
     {name = "exitflynn and AI"}
