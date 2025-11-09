@@ -16,6 +16,7 @@ from typing import Dict, Optional, List
 from .model_loader import ModelLoader
 from .benchmark import Benchmark
 from .device_info import get_device_info, get_compute_units
+from core.constants import WORKER_STATUS_ACTIVE, WORKER_STATUS_BUSY, RESULT_STATUS_COMPLETE, RESULT_STATUS_FAILED
 
 
 logger = logging.getLogger(__name__)
@@ -243,7 +244,7 @@ class WorkerAgent:
         
         logger.info(f"Executing job {job_id} - Model: {model_url}, Compute: {compute_unit}")
         
-        self._update_status('busy')
+        self._update_status(WORKER_STATUS_BUSY)
         
         start_time = time.time()
         
@@ -288,7 +289,8 @@ class WorkerAgent:
             
             logger.info(f"Job {job_id} completed in {elapsed:.1f}s")
             
-            self._update_status('active')
+            # Update status back to active
+            self._update_status(WORKER_STATUS_ACTIVE)
             
             return result
         
@@ -297,7 +299,8 @@ class WorkerAgent:
             logger.error(f"Job {job_id} failed after {elapsed:.1f}s: {e}", exc_info=True)
             device_info = get_device_info()
             
-            self._update_status('active')
+            # Update status back to active even on failure
+            self._update_status(WORKER_STATUS_ACTIVE)
             
             return {
                 'job_id': job_id,

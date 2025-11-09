@@ -1,0 +1,57 @@
+# ========== Worker Status Constants ==========
+WORKER_STATUS_ACTIVE = 'active'
+WORKER_STATUS_BUSY = 'busy'
+WORKER_STATUS_CLEANUP = 'cleanup'
+WORKER_STATUS_FAULTY = 'faulty'
+
+WORKER_STATUS_VALUES = [
+    WORKER_STATUS_ACTIVE,
+    WORKER_STATUS_BUSY,
+    WORKER_STATUS_CLEANUP,
+    WORKER_STATUS_FAULTY
+]
+
+# ========== Job Status Constants ==========
+JOB_STATUS_PENDING = 'pending'
+JOB_STATUS_RUNNING = 'running'
+JOB_STATUS_COMPLETE = 'Complete'
+JOB_STATUS_FAILED = 'Failed'
+JOB_STATUS_CANCELLED = 'cancelled'
+
+JOB_STATUS_VALUES = [
+    JOB_STATUS_PENDING,
+    JOB_STATUS_RUNNING,
+    JOB_STATUS_COMPLETE,
+    JOB_STATUS_FAILED,
+    JOB_STATUS_CANCELLED
+]
+
+# ========== Compute Unit Constants ==========
+COMPUTE_UNIT_CPU_ONNX = 'CPU (ONNX)'
+COMPUTE_UNIT_GPU_ONNX = 'GPU (ONNX)'
+COMPUTE_UNIT_DIRECTML_ONNX = 'DirectML (ONNX)'
+COMPUTE_UNIT_OPENVINO_ONNX = 'OpenVINO (ONNX)'
+COMPUTE_UNIT_GPU_COREML = 'GPU (CoreML)'
+COMPUTE_UNIT_NEURAL_ENGINE_COREML = 'Neural Engine (CoreML)'
+
+COMPUTE_UNIT_VALUES = [
+    COMPUTE_UNIT_CPU_ONNX,
+    COMPUTE_UNIT_GPU_ONNX,
+    COMPUTE_UNIT_DIRECTML_ONNX,
+    COMPUTE_UNIT_OPENVINO_ONNX,
+    COMPUTE_UNIT_GPU_COREML,
+    COMPUTE_UNIT_NEURAL_ENGINE_COREML
+]
+
+# ========== Queue Name Constants ==========
+QUEUE_PREFIX_JOBS = 'jobs:capability'
+QUEUE_PREFIX_RESULTS = 'results:queue'
+QUEUE_PREFIX_HEARTBEAT = 'heartbeat'
+
+# ========== Result Status Constants ==========
+RESULT_STATUS_COMPLETE = 'Complete'
+RESULT_STATUS_FAILED = 'Failed'
+
+# ========== Heartbeat Constants ==========
+HEARTBEAT_INTERVAL = 10  # seconds
+HEARTBEAT_TIMEOUT = 60  # seconds
