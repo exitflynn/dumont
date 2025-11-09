@@ -30,9 +30,14 @@ def run_load_task(model_path: str, compute_unit: str) -> dict:
         Dictionary with load timing metrics
     """
     import os
+    import warnings
+    
+    warnings.filterwarnings('ignore')
     
     old_stdout = sys.stdout
+    old_stderr = sys.stderr
     sys.stdout = open(os.devnull, 'w')
+    sys.stderr = open(os.devnull, 'w')
     
     try:
         model_loader = ModelLoader(compute_unit=compute_unit)
@@ -43,9 +48,11 @@ def run_load_task(model_path: str, compute_unit: str) -> dict:
         
         model_loader.cleanup()
     finally:
-        # Restore stdout
+        # Restore stdout and stderr
         sys.stdout.close()
+        sys.stderr.close()
         sys.stdout = old_stdout
+        sys.stderr = old_stderr
     
     return {
         "LoadMsMedian": load_time_ms,
@@ -70,10 +77,15 @@ def run_infer_task(model_path: str, compute_unit: str, num_runs: int) -> dict:
         Dictionary with inference timing metrics
     """
     import os
+    import warnings
     
-    # Suppress stdout from model loader (redirect to devnull)
+    warnings.filterwarnings('ignore')
+    
+    # Suppress stdout and stderr from model loader (redirect to devnull)
     old_stdout = sys.stdout
+    old_stderr = sys.stderr
     sys.stdout = open(os.devnull, 'w')
+    sys.stderr = open(os.devnull, 'w')
     
     try:
         model_loader = ModelLoader(compute_unit=compute_unit)
@@ -95,9 +107,11 @@ def run_infer_task(model_path: str, compute_unit: str, num_runs: int) -> dict:
         # Clean up
         model_loader.cleanup()
     finally:
-        # Restore stdout
+        # Restore stdout and stderr
         sys.stdout.close()
+        sys.stderr.close()
         sys.stdout = old_stdout
+        sys.stderr = old_stderr
     
     # Calculate statistics
     times_array = np.array(inference_times)

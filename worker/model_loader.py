@@ -57,8 +57,24 @@ class ModelLoader:
         model_path = os.path.join(download_dir, filename)
         
         print(f"Downloading model from {model_url}...")
-        urllib.request.urlretrieve(model_url, model_path)
-        print(f"Model downloaded to {model_path}")
+        
+        try:
+            urllib.request.urlretrieve(model_url, model_path)
+            
+            if not os.path.exists(model_path):
+                raise ValueError(f"Download failed: file not created at {model_path}")
+            
+            file_size = os.path.getsize(model_path)
+            if file_size == 0:
+                raise ValueError(f"Download failed: file is empty")
+            
+            
+            print(f"Model downloaded to {model_path} ({file_size / (1024**2):.2f} MB)")
+            
+        except Exception as e:
+            if os.path.exists(model_path):
+                os.remove(model_path)
+            raise ValueError(f"Failed to download model from {model_url}: {str(e)}")
         
         return model_path
     
