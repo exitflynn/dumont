@@ -68,7 +68,6 @@ class ONNXEngine(InferenceEngine):
         else:
             providers = ['CPUExecutionProvider']
         
-        # Filter to only available providers
         available_providers = ort.get_available_providers()
         return [p for p in providers if p in available_providers]
     
@@ -83,16 +82,14 @@ class ONNXEngine(InferenceEngine):
         Returns:
             Path to model file
         """
-        # Check if it's a local file path
+
         if os.path.exists(model_url):
             print(f"Using local model file: {model_url}")
             return model_url
         
-        # Otherwise, treat as URL and download
         if download_dir is None:
             download_dir = tempfile.gettempdir()
         
-        # Parse URL to get filename
         parsed_url = urllib.parse.urlparse(model_url)
         filename = os.path.basename(parsed_url.path)
         if not filename:
@@ -100,7 +97,6 @@ class ONNXEngine(InferenceEngine):
         
         model_path = os.path.join(download_dir, filename)
         
-        # Download the model
         print(f"Downloading ONNX model from {model_url}...")
         urllib.request.urlretrieve(model_url, model_path)
         print(f"ONNX model downloaded to {model_path}")

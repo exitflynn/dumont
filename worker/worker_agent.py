@@ -159,6 +159,24 @@ class WorkerAgent:
             logger.warning(f"Failed to send direct heartbeat: {e}")
             return False
     
+    def _update_status(self, status: str) -> bool:
+        """Update worker status in orchestrator."""
+        try:
+            response = requests.put(
+                f"{self.orchestrator_url}/api/workers/{self.worker_id}/status",
+                timeout=5,
+                json={'status': status}
+            )
+            success = response.status_code == 200
+            if success:
+                logger.debug(f"Status updated to: {status}")
+            else:
+                logger.warning(f"Status update failed: {response.status_code}")
+            return success
+        except Exception as e:
+            logger.warning(f"Failed to update status: {e}")
+            return False
+    
     def register_with_orchestrator(self) -> bool:
         try:
             device_info = get_device_info()
@@ -225,6 +243,8 @@ class WorkerAgent:
         
         logger.info(f"Executing job {job_id} - Model: {model_url}, Compute: {compute_unit}")
         
+        self._update_status('busy')
+        
         start_time = time.time()
         
         try:
@@ -267,12 +287,17 @@ class WorkerAgent:
             }
             
             logger.info(f"Job {job_id} completed in {elapsed:.1f}s")
+            
+            self._update_status('active')
+            
             return result
         
         except Exception as e:
             elapsed = time.time() - start_time
             logger.error(f"Job {job_id} failed after {elapsed:.1f}s: {e}", exc_info=True)
             device_info = get_device_info()
+            
+            self._update_status('active')
             
             return {
                 'job_id': job_id,
@@ -371,7 +396,7 @@ def main():
     )
     
     worker = WorkerAgent(
-        orchestrator_url=args.host,
+        orchestrator_url=args.orchestrator_url,
         redis_host=args.redis_host,
         redis_port=args.redis_port
     )
