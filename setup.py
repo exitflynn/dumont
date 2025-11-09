@@ -4,11 +4,6 @@ Packaging configuration for worker agent distribution.
 """
 
 from setuptools import setup, find_packages
-from pathlib import Path
-
-# Read long description from README
-readme_file = Path(__file__).parent / "README.md"
-long_description = readme_file.read_text() if readme_file.exists() else ""
 
 # Read version
 version = "1.0.0"
@@ -40,7 +35,6 @@ setup(
     name="cyclops-worker",
     version=version,
     description="sark Distributed Benchmarking Worker Agent",
-    long_description=long_description,
     long_description_content_type="text/markdown",
     author="exitflynn and AI",
     url="https://github.com/exitflynn/dumont",
