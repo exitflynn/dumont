@@ -111,20 +111,63 @@ def get_device_info() -> Dict[str, Optional[str]]:
             print(f"[DEBUG] Failed to get GPU info: {e}")
             pass
     
-    # Device name (hostname)
     device_name = platform.node()
     
-    # Try to get model name on macOS
     if system == "Darwin":
         try:
             import subprocess
-            result = subprocess.run(['sysctl', '-n', 'hw.model'], 
-                                  capture_output=True, text=True, timeout=2)
+            result = subprocess.run(
+                ['system_profiler', 'SPHardwareDataType'],
+                capture_output=True, text=True, timeout=5
+            )
             if result.returncode == 0:
-                device_name = result.stdout.strip()
+                for line in result.stdout.split('\n'):
+                    if 'Model Name:' in line:
+                        device_name = line.split(':', 1)[-1].strip()
+                        break
         except Exception as e:
-            print(f"[DEBUG] Failed to get device model: {e}")
-            pass
+            print(f"[DEBUG] Failed to get macOS model name: {e}")
+    
+    elif system == "Linux":
+        try:
+            board_name = None
+            board_vendor = None
+            
+            try:
+                with open('/sys/devices/virtual/dmi/id/board_name', 'r') as f:
+                    board_name = f.read().strip()
+            except:
+                pass
+            
+            try:
+                with open('/sys/devices/virtual/dmi/id/sys_vendor', 'r') as f:
+                    board_vendor = f.read().strip()
+            except:
+                pass
+            
+            if board_name and board_vendor:
+                device_name = f"{board_vendor} {board_name}"
+            elif board_name:
+                device_name = board_name
+            elif board_vendor:
+                device_name = board_vendor
+        except Exception as e:
+            print(f"[DEBUG] Failed to get Linux device model: {e}")
+    
+    elif system == "Windows":
+        # Windows: Try to get device model from WMI
+        try:
+            import subprocess
+            result = subprocess.run(
+                ['wmic', 'computersystem', 'get', 'model'],
+                capture_output=True, text=True, timeout=5
+            )
+            if result.returncode == 0:
+                lines = result.stdout.strip().split('\n')
+                if len(lines) > 1:
+                    device_name = lines[1].strip()
+        except Exception as e:
+            print(f"[DEBUG] Failed to get Windows device model: {e}")
     
     # Device year (not easily detectable, will be None)
     device_year = None
@@ -156,36 +199,28 @@ def get_compute_units() -> list:
     units = []
     system = platform.system()
     
-    # Check ONNX Runtime availability and providers
     try:
         import onnxruntime as ort
         available_providers = ort.get_available_providers()
         
-        # CPU is always available via ONNX
         units.append('CPU (ONNX)')
         
-        # Check for CUDA GPU support
         if 'CUDAExecutionProvider' in available_providers:
             units.append('GPU (ONNX)')
         
-        # Check for Windows DML
         if 'DmlExecutionProvider' in available_providers:
             units.append('DirectML (ONNX)')
         
-        # Check for OpenVINO
         if 'OpenVINOExecutionProvider' in available_providers:
             units.append('OpenVINO (ONNX)')
     
     except ImportError:
-        # ONNX Runtime not available, add CPU as fallback
         units.append('CPU')
     
-    # Check for CoreML and Apple Silicon on macOS
     if system == "Darwin":
         try:
             import coremltools
             
-            # Check for Apple Silicon
             try:
                 result = subprocess.run(
                     ['sysctl', '-n', 'machdep.cpu.brand_string'],
@@ -193,13 +228,10 @@ def get_compute_units() -> list:
                 )
                 cpu_info = result.stdout.strip() if result.returncode == 0 else ""
                 
-                # Apple Silicon detection
                 if 'Apple' in cpu_info:
-                    # GPU (via Metal)
                     if 'GPU (CoreML)' not in units:
                         units.append('GPU (CoreML)')
                     
-                    # Neural Engine
                     if 'Neural Engine (CoreML)' not in units:
                         units.append('Neural Engine (CoreML)')
             except Exception:
