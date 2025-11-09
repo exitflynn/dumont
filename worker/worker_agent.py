@@ -13,12 +13,22 @@ import sys
 import subprocess
 import psutil
 import threading
+import warnings
 from typing import Dict, Optional, List, Tuple
 
-# Import benchmarking modules using relative imports
-from .model_loader import ModelLoader
-from .device_info import get_device_info, get_compute_units
-from core.constants import WORKER_STATUS_ACTIVE, WORKER_STATUS_BUSY, RESULT_STATUS_COMPLETE, RESULT_STATUS_FAILED
+warnings.filterwarnings('ignore')
+
+_original_stderr = sys.stderr
+sys.stderr = open(os.devnull, 'w')
+
+try:
+    # Import benchmarking modules using relative imports
+    from .model_loader import ModelLoader
+    from .device_info import get_device_info, get_compute_units
+    from core.constants import WORKER_STATUS_ACTIVE, WORKER_STATUS_BUSY, RESULT_STATUS_COMPLETE, RESULT_STATUS_FAILED
+finally:
+    sys.stderr.close()
+    sys.stderr = _original_stderr
 
 
 logger = logging.getLogger(__name__)
