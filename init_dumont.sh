@@ -38,15 +38,15 @@ detect_os() {
     case "$OS" in
         linux*)
             OS_TYPE="linux"
-            BUILD_SCRIPT="build-linux.sh"
+            BUILD_SCRIPT="build_scripts/build-linux.sh"
             ;;
         darwin*)
             OS_TYPE="macos"
-            BUILD_SCRIPT="build-macos.sh"
+            BUILD_SCRIPT="build_scripts/build-macos.sh"
             ;;
         mingw*|msys*|cygwin*)
             OS_TYPE="windows"
-            BUILD_SCRIPT="build.bat"
+            BUILD_SCRIPT="build_scripts/build-windows.bat"
             ;;
         *)
             print_error "Unsupported OS: $OS"
