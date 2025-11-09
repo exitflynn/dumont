@@ -147,61 +147,66 @@ def get_device_info() -> Dict[str, Optional[str]]:
 
 def get_compute_units() -> list:
     """
-    Get available compute units for inference.
+    Get available compute units and inference engines for this device.
     
     Returns:
-        List of available compute unit strings (e.g., ['CPU', 'GPU', 'NEURAL_ENGINE', 'CoreML'])
+        List of available compute unit strings in format: "COMPUTE_UNIT (INFERENCE_ENGINE)"
+        Examples: ['CPU (ONNX)', 'Neural Engine (CoreML)', 'GPU (ONNX)']
     """
-    units = ['CPU']  # CPU is always available
-    
+    units = []
     system = platform.system()
     
-    # Check for CoreML and Apple Silicon on macOS
-    if system == "Darwin":
-        # Check if CoreML tools are available
-        try:
-            import coremltools
-            units.append('CoreML')
-        except ImportError:
-            pass
-        
-        # Detect Apple Silicon and GPU/Neural Engine
-        try:
-            result = subprocess.run(
-                ['sysctl', '-n', 'machdep.cpu.brand_string'],
-                capture_output=True, text=True, timeout=2
-            )
-            cpu_info = result.stdout.strip() if result.returncode == 0 else ""
-            
-            # Apple Silicon detection (M1, M1 Pro, M1 Max, M2, M2 Pro, M2 Max, M3, etc.)
-            if 'Apple' in cpu_info:
-                # All Apple Silicon chips have GPU and Neural Engine
-                if 'GPU' not in units:
-                    units.append('GPU')
-                if 'NEURAL_ENGINE' not in units:
-                    units.append('NEURAL_ENGINE')
-        except Exception:
-            pass
-    
-    # Check for ONNX Runtime providers
+    # Check ONNX Runtime availability and providers
     try:
         import onnxruntime as ort
         available_providers = ort.get_available_providers()
         
-        if 'DmlExecutionProvider' in available_providers:
-            if 'DML' not in units:
-                units.append('DML')
-        if 'OpenVINOExecutionProvider' in available_providers:
-            if 'OpenVINO;CPU' not in units:
-                units.append('OpenVINO;CPU')
-            # Check if GPU is available for OpenVINO
-            if 'OpenVINOExecutionProvider' in available_providers:
-                # This is a simplified check - in practice, you'd check device availability
-                if 'OpenVINO;GPU' not in units:
-                    units.append('OpenVINO;GPU')
+        # CPU is always available via ONNX
+        units.append('CPU (ONNX)')
         
+        # Check for CUDA GPU support
+        if 'CUDAExecutionProvider' in available_providers:
+            units.append('GPU (ONNX)')
+        
+        # Check for Windows DML
+        if 'DmlExecutionProvider' in available_providers:
+            units.append('DirectML (ONNX)')
+        
+        # Check for OpenVINO
+        if 'OpenVINOExecutionProvider' in available_providers:
+            units.append('OpenVINO (ONNX)')
+    
     except ImportError:
-        pass
+        # ONNX Runtime not available, add CPU as fallback
+        units.append('CPU')
+    
+    # Check for CoreML and Apple Silicon on macOS
+    if system == "Darwin":
+        try:
+            import coremltools
+            
+            # Check for Apple Silicon
+            try:
+                result = subprocess.run(
+                    ['sysctl', '-n', 'machdep.cpu.brand_string'],
+                    capture_output=True, text=True, timeout=2
+                )
+                cpu_info = result.stdout.strip() if result.returncode == 0 else ""
+                
+                # Apple Silicon detection
+                if 'Apple' in cpu_info:
+                    # GPU (via Metal)
+                    if 'GPU (CoreML)' not in units:
+                        units.append('GPU (CoreML)')
+                    
+                    # Neural Engine
+                    if 'Neural Engine (CoreML)' not in units:
+                        units.append('Neural Engine (CoreML)')
+            except Exception:
+                pass
+        
+        except ImportError:
+            pass
     
     return units
 

@@ -77,14 +77,14 @@ class Benchmark:
             - InferenceMsStdDev (optional), InferenceMsFirst (optional)
             - PeakInferenceRamUsage
         """
-        if model_loader.session is None:
+        if model_loader.engine is None:
             raise ValueError("Model not loaded. Call benchmark_load() first.")
         
         # Measure baseline RAM
         baseline_ram = self._get_ram_usage_mb()
         
         # Prepare input (auto-generated from model signature)
-        input_data = model_loader.create_input()
+        input_data = model_loader.create_sample_input()
         
         inference_times = []
         ram_usage_during_inference = []
