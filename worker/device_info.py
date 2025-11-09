@@ -165,7 +165,6 @@ def get_device_info() -> Dict[str, Optional[str]]:
             print(f"[DEBUG] Failed to get Linux device model: {e}")
     
     elif system == "Windows":
-        # Windows: Try to get device model from WMI
         try:
             import subprocess
             result = subprocess.run(
